@@ -1,7 +1,7 @@
 # Multivariate Time Series Forecasting of Level of pollution in Beijing
 
 ## Project description
-The goal of the project was forecasting the next hour's level of pollution (pm2.5) in Beijing by using information about level of pollution in the previous days.
+The goal of the project was forecasting the next hour's level of pollution (pm2.5) in Beijing by using information about the level of pollution in the previous days.
 
 ## Dataset 
 The dataset is stored as a **csv** file [pollution.csv](src/data/) downloaded from [Datasets repository](https://github.com/jbrownlee/Datasets) provided by [jbrownlee](https://github.com/jbrownlee). Dataset consists of hourly data from 02. January 2010. up to 31. December 2014. It contains 41757 hours of measurements.
@@ -46,13 +46,13 @@ The model consists of a single layer LSTM and a fully connected layer. The hidde
 **LSTM layer architecture:**
 | Input dim.      | Embedding dim. | Number of layers |
 | :-------------: | :-------------: | :-------: |
-|     18      | 6       | 1       |
+|     8      | 6       | 1       |
 
 Input dimension of the LSTM is 8 because the shape of the input for an LSTM is (batch_size, sequence_length, input_dim). Considering we are taking last two hours into account when prediction pm2.5 concentration in the next hour, we have input shape in the next form: (bath_size, lag=2, number_of_features=8).
 
 ## Training
 The model was trained for **300 epochs** using Google Colab. 
-**Adam optimizer** was used with **learning rate of 2e-4** and a slight **L2 regularization**. The batch size contained 512 examples.
+**Adam optimizer** was used with **learning rate of 2e-4** and a slight **L2 regularization**. The batch size contained **512** examples.
 Along with that **Mean Absolute Error (L1 loss)** function was used. In the training process it showed better results (regarding the convergence) than the Mean Squared Error. Most of the previously mentioned hyperparameters can be modified in the [globals.py](src/globals.py) file.
 
 
