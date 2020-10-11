@@ -19,8 +19,10 @@ parser.add_argument("--dataset_path", type=str, default="data/pollution.csv",
                     help="Location of the dataset file")
 parser.add_argument("--lag", type=int, default=2,
                     help="Time lag used for preparing train and test X-Y pairs")
-parser.add_argument("--split_ratio", type=float, default=0.75,
-                    help="Ratio for splitting the dataset into train-test subsets")
+parser.add_argument("--train_ratio", type=float, default=0.5,
+                    help="Ratio for extracting the train set")
+parser.add_argument("--val_ratio", type=float, default=0.25,
+                    help="Ratio for extracting the validation set")
 # MODEL ARGUMENTS
 parser.add_argument("--hidden_dim", type=int, default=6,
                     help="Dimension of the LSTM hidden state vector")

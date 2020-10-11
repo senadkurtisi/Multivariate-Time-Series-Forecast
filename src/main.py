@@ -6,13 +6,13 @@ from model import PollutionForecast
 
 if __name__ == "__main__":
     # Load the dataset
-    dataset, scaler = load_dataset(config.dataset_path, show_data=True)
+    dataset, scaler = load_dataset(config.dataset_path, show_data=False)
     # Prepare the dataset for training/testing
     subsequences = extract_subsequences(dataset['scaled'], 
                                         dataset['column_names'], 
                                         lag=config.lag)
-    # Split the dataset into train/test set
-    train_loader, test_set = train_test_split(subsequences)
+    # Split the dataset into train/validation/test set
+    train_loader, val_set, test_set = train_val_test_split(subsequences)
 
     # # Train the network
     if config.mode == "train":
@@ -22,7 +22,7 @@ if __name__ == "__main__":
                                 num_layers=config.num_layers)
         # Train the model
         train_loop(net, config.epochs, config.lr, config.wd,
-                   train_loader, test_set, debug=True)
+                   train_loader, val_set, debug=True)
     else:
         # Create new instance of the RNN using default values
         net = PollutionForecast(input_dim=train_loader.dataset[0][0].shape[-1],

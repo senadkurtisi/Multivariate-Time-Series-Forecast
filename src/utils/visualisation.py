@@ -24,36 +24,46 @@ def show_evaluation(net, dataset, target, scaler, debug=True):
                       MSE/MAE
     '''
     net.eval()
-    total_train_size = int(config.split_ratio*len(target))
-    COL_NUM = int((dataset.shape[-1] - 1)/config.lag)
-    # Prediction on the entire dataset
-    total_set = torch.Tensor(dataset[:,:-1]).view(-1, config.lag, COL_NUM).to(device)
-    # Prediction on the test set
-    test_predict = net(total_set).unsqueeze(-1).cpu().data.numpy()
+    TRAIN_SPLIT = int(config.train_ratio*len(target))
+    VAL_SPLIT = TRAIN_SPLIT + int(config.val_ratio*len(target))
 
-    scaling_temp = np.concatenate([test_predict, dataset[:, -8:-1]], axis=1)
-    test_predict = scaler.inverse_transform(scaling_temp)[:, 0]
+    COL_NUM = int((dataset.shape[-1] - 1)/config.lag)
+
+    # Adapt the entire dataset for the PyTorch LSTM
+    total_set = torch.Tensor(dataset[:,:-1]).view(-1, config.lag, COL_NUM).to(device)
+    # Prediction on the entire dataset
+    prediction = net(total_set).unsqueeze(-1).cpu().data.numpy()
+
+    scaling_temp = np.concatenate([prediction, dataset[:, -8:-1]], axis=1)
+    prediction = scaler.inverse_transform(scaling_temp)[:, 0]
 
     # Plotting the original sequence vs. predicted
     plt.figure(figsize=(8,5))
     plt.plot(range(0, len(target)), target)
-    plt.plot(range(config.lag, len(target)), test_predict)
+    plt.plot(range(config.lag, len(target)), prediction)
     plt.xticks(tick_positions, x_ticks, size='small')
-    plt.axvline(x=total_train_size, c='r', linestyle='-')
+    plt.axvline(x=TRAIN_SPLIT, c='b', linestyle='-')
+    plt.axvline(x=VAL_SPLIT, c='r', linestyle='-')
     plt.title('Multivariate Time-Series Forecast')
     plt.xlabel('Year-Month')
     plt.ylabel("Level of pollution")
-    plt.legend(['Train-Test split', 'Target', 'Prediction'])
+    plt.legend(['Ground truth', 'Prediction', 'Train-Val split', 'Test split'])
     plt.show()
 
     if debug:
+        # Calculating total MSE & MAE
+        train_mse = (np.square(prediction[:TRAIN_SPLIT] - target[:TRAIN_SPLIT])).mean()
+        train_mae = (np.abs(prediction[:TRAIN_SPLIT] - target[:TRAIN_SPLIT])).mean()
+        # Calculating train MSE & MAE
+        val_mse = (np.square(prediction[TRAIN_SPLIT:VAL_SPLIT] - target[TRAIN_SPLIT:VAL_SPLIT])).mean()
+        val_mae = (np.abs(prediction[TRAIN_SPLIT:VAL_SPLIT] - target[TRAIN_SPLIT:VAL_SPLIT])).mean()
         # Calculating test MSE & MAE
-        test_mse = (np.square(test_predict[total_train_size:] - 
-                              target[total_train_size+config.lag:])).mean()
-        test_mae = (np.abs(test_predict[total_train_size:] - 
-                              target[total_train_size+config.lag:])).mean()
-                              
-        print(f"Test MSE:   {test_mse:.4f}  |  Test MAE:   {test_mae:.4f}")
+        test_mse = (np.square(prediction[VAL_SPLIT:] - target[VAL_SPLIT+config.lag:])).mean()
+        test_mae = (np.abs(prediction[VAL_SPLIT:] - target[VAL_SPLIT+config.lag:])).mean()
+
+        print(f"Train MSE:  {train_mse:.4f}  |  Train MAE:  {train_mae:.4f}")
+        print(f"Val MSE:  {val_mse:.4f}  |  Val MAE:  {val_mae:.4f}")
+        print(f"Test MSE:  {test_mse:.4f}   |  Test MAE:  {test_mae:.4f}")
 
 
 def show_loss(history):

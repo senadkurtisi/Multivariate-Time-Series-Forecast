@@ -11,24 +11,24 @@ from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from datetime import datetime
 
 
-def evaluate(net, test_set, history):
+def evaluate(net, val_set, history):
     ''' Evaluates the performance of the
         RNN on the test set.
 
     Arguments:
         net (nn.Module): RNN net
-        test_set (dict): test input and target output
+        val_set (dict): validation input and target output
         history (dict): dict used for loss log
     Returns:
-        test_loss (float): loss on the test set
+        val_loss (float): loss on the validation set
     '''
     net.eval()
 
-    test_predict = net(test_set['X'])
-    test_loss = loss_func(test_predict, test_set['Y'])
-    history['test_loss'].append(test_loss)
+    val_predict = net(val_set['X'])
+    val_loss = loss_func(val_predict, val_set['Y'])
+    history['val_loss'].append(val_loss)
 
-    return test_loss.item()
+    return val_loss.item()
 
 
 def train(net, train_loader, optimizer, history):
@@ -62,7 +62,7 @@ def train(net, train_loader, optimizer, history):
     return loss.item()
 
 
-def train_loop(net, epochs, lr, wd, train_loader, test_set, debug=True):
+def train_loop(net, epochs, lr, wd, train_loader, val_set, debug=True):
     ''' Performs the training of the RNN using Adam optimizer.
         Train and evaluation losses are being logged.
 
@@ -72,12 +72,12 @@ def train_loop(net, epochs, lr, wd, train_loader, test_set, debug=True):
         lr (float): max learning rate for Adam optimizer
         wd (float): L2 regularization weight decay
         train_loader (DataLoader): train input and target output
-        test_set (dict): test input and target output
+        val_set (dict): validation input and target output
         debug (bool): Should we display train progress?
     '''
     history = dict()
     history['train_loss'] = list()
-    history['test_loss'] = list()
+    history['val_loss'] = list()
 
     optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=wd)
 
@@ -85,50 +85,62 @@ def train_loop(net, epochs, lr, wd, train_loader, test_set, debug=True):
         train_loss = train(net, train_loader, optimizer, history)
 
         with torch.no_grad():
-            test_loss = evaluate(net, test_set, history)
+            val_loss = evaluate(net, val_set, history)
 
         if debug and (epoch + 1) % 10 == 0:
             print(f"Epoch: {epoch+1} | Train Loss: {train_loss:.8f}",
-                  f" |  Test Loss: {test_loss:.8f}")
+                  f" |  Validation Loss: {val_loss:.8f}")
 
     if debug:
         show_loss(history)
 
 
-def train_test_split(subsequences):
-    ''' Splits the loaded subsequences into train
-        and test set w.r.t. split ratio.
+def train_val_test_split(subsequences):
+    ''' Splits the loaded subsequences into train, validation
+        and test set w.r.t. split ratio.s
 
     Arguments:
         subsequences (numpy.ndarray): input-output pairs
     Returns:
         train_loader (DataLoader): train set inputs and target outputs
+        val_set (dict): validation set inputs and target outputs
         test_set (dict): test set inputs and target outputs
     '''
     # Get the length of the train set
-    TRAIN_SIZE = int(config.split_ratio*len(subsequences))
+    TRAIN_SPLIT = int(config.train_ratio*len(subsequences))
+    VAL_SPLIT = TRAIN_SPLIT + int(config.val_ratio*len(subsequences))
 
-    # Extract train and test subsets
-    trainX = torch.Tensor(subsequences[:TRAIN_SIZE, :-1]).to(device)
-    trainY = torch.Tensor(subsequences[:TRAIN_SIZE, -1]).to(device)
-    testX = torch.Tensor(subsequences[TRAIN_SIZE:, :-1]).to(device)
-    testY = torch.Tensor(subsequences[TRAIN_SIZE:, -1]).to(device)
+    # Extract train set
+    trainX = torch.Tensor(subsequences[:TRAIN_SPLIT, :-1]).to(device)
+    trainY = torch.Tensor(subsequences[:TRAIN_SPLIT, -1]).to(device)
+    # Extract validation set
+    valX = torch.Tensor(subsequences[TRAIN_SPLIT:VAL_SPLIT, :-1]).to(device)
+    valY = torch.Tensor(subsequences[TRAIN_SPLIT:VAL_SPLIT, -1]).to(device)
+    # Extract test set
+    testX = torch.Tensor(subsequences[VAL_SPLIT:, :-1]).to(device)
+    testY = torch.Tensor(subsequences[VAL_SPLIT:, -1]).to(device)
 
-    # Adapt train/test inputs to (batch, sequence len, input_dim) shape
+    # Adapt train/val/test inputs to (batch, sequence len, input_dim) shape
     COL_NUM = int(trainX.shape[-1]/config.lag)
     trainX = trainX.view(-1, config.lag, COL_NUM)
+    valX = valX.view(-1, config.lag, COL_NUM)
     testX = testX.view(-1, config.lag, COL_NUM)
 
     # Create train set loader
     train_set = torch.utils.data.TensorDataset(trainX, trainY)
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=config.bs)
 
-    # Create test setS
+    # Create test set
+    val_set = dict()
+    val_set['X'] = torch.Tensor(valX).to(device)
+    val_set['Y'] = torch.Tensor(valY).to(device)
+
+    # Create test set
     test_set = dict()
     test_set['X'] = torch.Tensor(testX).to(device)
     test_set['Y'] = torch.Tensor(testY).to(device)
 
-    return train_loader, test_set
+    return train_loader, val_set, test_set
 
 
 def extract_subsequences(sequence, cols, lag=3):
