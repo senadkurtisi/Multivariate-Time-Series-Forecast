@@ -42,7 +42,7 @@ def show_evaluation(net, dataset, target, scaler, debug=True):
     plt.plot(range(0, len(target)), target)
     plt.plot(range(config.lag, len(target)), prediction)
     plt.xticks(tick_positions, x_ticks, size='small')
-    plt.axvline(x=TRAIN_SPLIT, c='b', linestyle='-')
+    plt.axvline(x=TRAIN_SPLIT, c='g', linestyle='-')
     plt.axvline(x=VAL_SPLIT, c='r', linestyle='-')
     plt.title('Multivariate Time-Series Forecast')
     plt.xlabel('Year-Month-Day')

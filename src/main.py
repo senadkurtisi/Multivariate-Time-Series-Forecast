@@ -19,7 +19,7 @@ if __name__ == "__main__":
         # Create new instance of the RNN
         net = PollutionForecast(input_dim=train_loader.dataset[0][0].shape[-1],
                                 hidden_dim=config.hidden_dim,
-                                num_layers=config.num_layers)
+                                num_layers=config.num_layers).to(device)
         # Train the model
         train_loop(net, config.epochs, config.lr, config.wd,
                    train_loader, val_set, debug=True)
@@ -27,7 +27,7 @@ if __name__ == "__main__":
         # Create new instance of the RNN using default values
         net = PollutionForecast(input_dim=train_loader.dataset[0][0].shape[-1],
                                 hidden_dim=parser.get_default('hidden_dim'),
-                                num_layers=parser.get_default('num_layers'))
+                                num_layers=parser.get_default('num_layers')).to(device)
         # Load pretrained weights
         net.load_state_dict(torch.load(
             config.pretrained_path, map_location=device))
