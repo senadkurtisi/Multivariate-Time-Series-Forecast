@@ -51,7 +51,7 @@ The model consists of a single layer LSTM and a fully connected layer. The hidde
 For the linear layer Uniform Kaiming initialization was used. It resulted in faster convergence than using the default PyTorch initialization for the linear layer. 
 
 ## Training
-The model was trained for **260 epochs** using Google Colab. 
+The model was trained for **300 epochs** using Google Colab. 
 **Adam optimizer** was used with **learning rate of 2e-4** and a slight **L2 regularization**. The batch size contained 512 examples.
 Along with that **Mean Absolute Error (L1 loss)** function was used. In the training process it showed better results (regarding the convergence) than the Mean Squared Error. Most of the previously mentioned hyperparameters can be modified in the [globals.py](src/globals.py) file.
 
