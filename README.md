@@ -48,7 +48,7 @@ The model consists of a single layer LSTM and a fully connected layer. The hidde
 | :-------------: | :-------------: | :-------: |
 |     8      | 6       | 1       |
 
-Input dimension of the LSTM is 8 because the shape of the input for an LSTM is (batch_size, sequence_length, input_dim). Considering we are taking last two hours into account when prediction pm2.5 concentration in the next hour, we have input shape in the next form: (bath_size, lag=2, number_of_features=8).
+Input dimension of the LSTM is 8 because the shape of the input for an LSTM is (batch_size, sequence_length, input_dim). Considering we are taking last two hours into account when predicting pm2.5 concentration in the next hour, we have input shape in the next form: (bath_size, lag=2, number_of_features=8).
 
 ## Training
 The model was trained for **300 epochs** using Google Colab. 
