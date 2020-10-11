@@ -12,7 +12,7 @@ The dataset is stored as a **csv** file [pollution.csv](src/data/) downloaded fr
 
 ### Data preprocessing
 
-The dataset consists of two columns:
+The dataset consists of several features:
 1. No: Row number
 2. year: year of measurement
 3. month: month of measurement
@@ -27,7 +27,7 @@ The dataset consists of two columns:
 12. Is: Cumulated hours of snow
 13. Ir: Cumulated hours of rain
 
-Features related to date: year, month, day & hour were joined in the YYYY-MM-DD-HH:HH:HH format. Dew Point feature ('DEWP') is a categorical variable so values of that feature were transformed into integers using [sklearn's label encoder](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html). The row number ('No') fearure was dropped. Rest of the features (8) were time-lagged for two time steps (two hours). So along with that we constructed input-output pairs which contain:
+Features related to date: year, month, day & hour were joined in the YYYY-MM-DD-HH:HH:HH format into a single feature: 'Date'. Dew Point feature ('DEWP') is a categorical variable so values of that feature were transformed into integers using [sklearn's label encoder](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html). The row number ('No') fearure was dropped. Every feature, except for date was time-lagged for two time steps (two hours). So along with that we constructed input-output pairs which contain:
 
 
 1. input - 16 variables: 8 variables time lagged for one and two hours (including pm2.5)
@@ -36,7 +36,7 @@ Features related to date: year, month, day & hour were joined in the YYYY-MM-DD-
 Default value of time lag(length of each input example) is two as previously mentioned but it can be modified in the **lag** argument of the *ArgumentParser* object in the [globals.py](src/globals.py) file. With this approach (and these hyperparameters) we created a dataset with 41755 input-output pairs.
 
 ### Train-Validation-Test split
-Previously created subsequences were split into train, validation and test set with 0.5-0.25-0.25 split ratios. This split ratio was chosen as a way to split the data in such way that first two years would end up in the training set, and the consecutive two years were split into validation and test set evenly (one year each). This hyperparameters can be modified the same way as time lag, in the [globals.py](src/globals.py) file.
+Previously created subsequences were split into train, validation and test set with 0.5-0.25-0.25 split ratios. This split ratios was chosen as a way to split the data in such way that first two years would end up in the training set, and the consecutive two years were split into validation and test set evenly (one year each). This hyperparameters can be modified the same way as time lag, in the [globals.py](src/globals.py) file.
 
 ## Model
 The model consists of a single layer LSTM and a fully connected layer. The hidden cells values of the last layer of LSTM are fed into a FC layer which has a linear activation.
@@ -54,7 +54,7 @@ Along with that **Mean Absolute Error (L1 loss)** function was used. In the trai
 
 
 ### Loss
-On the image bellow we can see train and test losses (MAE) during training. Performance evaluation on the validation and test set was performed in a single batch manner.
+On the image bellow we can see train and test losses (MAE) during training. Performance evaluation on the validationwas performed in a single batch manner.
 
 <img src="imgs/loss.png" width="575" height="350">
 
