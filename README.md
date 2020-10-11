@@ -1,7 +1,7 @@
-# Univariate Time Series Forecasting of Car Sales
+# Multivariate Time Series Forecasting of Car Sales
 
 ## Project description
-The goal of the project was forecasting the next hour's level of pollution (pm2.5) by using information about level of pollution in the previous days.
+The goal of the project was forecasting the next hour's level of pollution (pm2.5) in Beijing by using information about level of pollution in the previous days.
 
 ## Dataset 
 The dataset is stored as a **csv** file [pollution.csv](src/data/) downloaded from [Datasets repository](https://github.com/jbrownlee/Datasets) provided by [jbrownlee](https://github.com/jbrownlee). Dataset consists of hourly data from 02. January 2010. up to 31. December 2014. It contains 41755 hours of measurements.
