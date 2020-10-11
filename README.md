@@ -1,4 +1,4 @@
-# Multivariate Time Series Forecasting of Car Sales
+# Multivariate Time Series Forecasting of Level of pollution in Beijing
 
 ## Project description
 The goal of the project was forecasting the next hour's level of pollution (pm2.5) in Beijing by using information about level of pollution in the previous days.
@@ -27,7 +27,7 @@ The dataset consists of two columns:
 12. Is: Cumulated hours of snow
 13. Ir: Cumulated hours of rain
 
-Features related to date: year, month, day & hour were joined in the YYYY-MM-DD-HH:HH:HH format. The row number ('No') fearure was dropped. Rest of the features (8) were time-lagged for two time steps (two hours). So along with that we constructed input-output pairs which contain:
+Features related to date: year, month, day & hour were joined in the YYYY-MM-DD-HH:HH:HH format. Dew Point feature ('DEWP') is a categorical variable so values of that feature were transformed into integers using [sklearn's label encoder](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html). The row number ('No') fearure was dropped. Rest of the features (8) were time-lagged for two time steps (two hours). So along with that we constructed input-output pairs which contain:
 
 
 1. input - 16 variables: 8 variables time lagged for one and two hours (including pm2.5)
@@ -46,9 +46,6 @@ The model consists of a single layer LSTM and a fully connected layer. The hidde
 | :-------------: | :-------------: | :-------: |
 |     8      | 6       | 1       |
 
-**Weight init**
-
-For the linear layer Uniform Kaiming initialization was used. It resulted in faster convergence than using the default PyTorch initialization for the linear layer. 
 
 ## Training
 The model was trained for **300 epochs** using Google Colab. 
