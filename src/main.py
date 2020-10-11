@@ -6,7 +6,7 @@ from model import PollutionForecast
 
 if __name__ == "__main__":
     # Load the dataset
-    dataset, scaler = load_dataset(config.dataset_path, show_data=False)
+    dataset, scaler = load_dataset(config.dataset_path, show_data=True)
     # Prepare the dataset for training/testing
     subsequences = extract_subsequences(dataset['scaled'], 
                                         dataset['column_names'], 
