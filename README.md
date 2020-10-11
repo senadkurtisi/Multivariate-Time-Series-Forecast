@@ -27,7 +27,9 @@ The dataset consists of several features:
 12. Is: Cumulated hours of snow
 13. Ir: Cumulated hours of rain
 
-Features related to date: year, month, day & hour were joined in the YYYY-MM-DD-HH:HH:HH format into a single feature: 'Date'. Dew Point feature ('DEWP') is a categorical variable so values of that feature were transformed into integers using [sklearn's label encoder](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html). The row number ('No') feature was dropped. Every feature, except for date was time-lagged for two time steps (two hours). So along with that we constructed input-output pairs which contain:
+Features related to date: year, month, day & hour were joined in the YYYY-MM-DD-HH:HH:HH format into a single feature: 'Date'. Combined wind direction feature ('cbwd') is a categorical variable so values of that feature were transformed into integers using [sklearn's label encoder](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html). The row number ('No') feature was dropped. 
+
+Every feature, except for date was time-lagged for two time steps (two hours). So along with that we constructed input-output pairs which contain:
 
 
 1. input - 16 variables: 8 variables time lagged for one and two hours (including pm2.5)
@@ -44,8 +46,9 @@ The model consists of a single layer LSTM and a fully connected layer. The hidde
 **LSTM layer architecture:**
 | Input dim.      | Embedding dim. | Number of layers |
 | :-------------: | :-------------: | :-------: |
-|     8      | 6       | 1       |
+|     18      | 6       | 1       |
 
+Input dimension of the LSTM is 8 because the shape of the input for an LSTM is (batch_size, sequence_length, input_dim). Considering we are taking last two hours into account when prediction pm2.5 concentration in the next hour, we have input shape in the next form: (bath_size, lag=2, number_of_features=8).
 
 ## Training
 The model was trained for **300 epochs** using Google Colab. 
