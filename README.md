@@ -35,8 +35,8 @@ Features related to date: year, month, day & hour were joined in the YYYY-MM-DD-
 
 Default value of time lag(length of each input example) is two as previously mentioned but it can be modified in the **lag** argument of the *ArgumentParser* object in the [globals.py](src/globals.py) file. With this approach (and these hyperparameters) we created a dataset with 41755 input-output pairs.
 
-### Train-Evaluation split
-Previously created subsequences were split into train and test set with 0.75 split ratio. This split ratio was chosen as a way to split the data in such way that first three years would end up in the training set, and the last year in the test set. This hyperparameter can be modified the same way as time lag, in the [globals.py](src/globals.py) file.
+### Train-Validation-Test split
+Previously created subsequences were split into train, validation and test set with 0.5-0.25-0.25 split ratios. This split ratio was chosen as a way to split the data in such way that first two years would end up in the training set, and the consecutive two years were split into validation and test set evenly (one year each). This hyperparameters can be modified the same way as time lag, in the [globals.py](src/globals.py) file.
 
 ## Model
 The model consists of a single layer LSTM and a fully connected layer. The hidden cells values of the last layer of LSTM are fed into a FC layer which has a linear activation.
@@ -57,7 +57,7 @@ Along with that **Mean Absolute Error (L1 loss)** function was used. In the trai
 
 
 ### Loss
-On the image bellow we can see train and test losses (MAE) during training. Performance evaluation on the test set was performed in a single batch manner.
+On the image bellow we can see train and test losses (MAE) during training. Performance evaluation on the validation and test set was performed in a single batch manner.
 
 <img src="imgs/loss.png" width="575" height="350">
 
@@ -69,9 +69,9 @@ On the image below we can see the evaluation on the entire dataset.
 The model is succesfull in estimating the position of the peaks and increasing trend of the sequence, but has difficulty in estimating the exact values of the sequence. With respect to that bellow we can see a table with final evaluation metrics.
 
 
-| Test MSE. | Test MAE. |
-| :-------------: | :-------------: |
-| 487.8032   | 12.0220  |
+| Train MAE. | Validation MAE. | Test MAE. |
+| :-------------: | :-------------: | :-------------: |
+| 14.2131  | 12.8441  | 12.3864 |
 
 
 ## Setup & instructions
