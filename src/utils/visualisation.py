@@ -45,8 +45,8 @@ def show_evaluation(net, dataset, target, scaler, debug=True):
     plt.axvline(x=TRAIN_SPLIT, c='b', linestyle='-')
     plt.axvline(x=VAL_SPLIT, c='r', linestyle='-')
     plt.title('Multivariate Time-Series Forecast')
-    plt.xlabel('Year-Month')
-    plt.ylabel("Level of pollution")
+    plt.xlabel('Year-Month-Day')
+    plt.ylabel("Level of pollution ( pm2.5 )")
     plt.legend(['Ground truth', 'Prediction', 'Train-Val split', 'Test split'])
     plt.show()
 
@@ -93,6 +93,7 @@ def display_dataset(dataset, xlabels):
     global x_ticks
     global tick_positions
 
+    # Remove information about hours (only for plotting purposes)
     xlabels = [x[:10] for x in xlabels]
     # We can't show every date in the dataset
     # on the x axis because we couldn't see
@@ -112,7 +113,7 @@ def display_dataset(dataset, xlabels):
     plt.figure(figsize=(8, 5))
     plt.plot(dataset)
     plt.title('Pollution in Beijing')
-    plt.xlabel('Year-Month')
-    plt.ylabel("pm2.5")
+    plt.xlabel('Year-Month-Day')
+    plt.ylabel("Level of pollution ( pm2.5 )")
     plt.xticks(tick_positions, x_ticks, size='small')
     plt.show()
